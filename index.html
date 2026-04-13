@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Flores para ti</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at top, #ffe6f2 0%, #ffd1f0 40%, #ffc3a0 100%);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .message {
+      position: absolute;
+      top: 10%;
+      width: 100%;
+      text-align: center;
+      color: #6b1b3f;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      padding: 0 1rem;
+    }
+
+    .message h1 {
+      font-size: 2.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .message p {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .garden {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .flower {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      transform-origin: center bottom;
+      animation: floatUp linear forwards;
+      opacity: 0;
+    }
+
+    .petal {
+      position: absolute;
+      width: 60%;
+      height: 60%;
+      background: radial-gradient(circle at 30% 30%, #fff, #ff7ab8);
+      border-radius: 50%;
+      box-shadow: 0 0 6px rgba(0,0,0,0.15);
+    }
+
+    .petal:nth-child(1)  { top: 0%; left: 20%; }
+    .petal:nth-child(2)  { top: 20%; right: 0%; }
+    .petal:nth-child(3)  { bottom: 0%; right: 20%; }
+    .petal:nth-child(4)  { bottom: 20%; left: 0%; }
+    .petal:nth-child(5)  { top: -5%; left: 50%; transform: translateX(-50%); }
+
+    .center {
+      position: absolute;
+      width: 40%;
+      height: 40%;
+      background: radial-gradient(circle at 30% 30%, #ffe9a9, #ffb347);
+      border-radius: 50%;
+      top: 30%;
+      left: 30%;
+      box-shadow: 0 0 8px rgba(0,0,0,0.25);
+    }
+
+    .stem {
+      position: absolute;
+      width: 4px;
+      height: 50px;
+      background: linear-gradient(#4caf50, #2e7d32);
+      bottom: -35px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      box-shadow: 0 0 4px rgba(0,0,0,0.2);
+    }
+
+    .leaf {
+      position: absolute;
+      width: 14px;
+      height: 8px;
+      background: radial-gradient(circle at 30% 30%, #b2ff59, #388e3c);
+      border-radius: 50px 50px 50px 0;
+      top: 55%;
+      left: 50%;
+      transform-origin: left center;
+    }
+
+    .leaf.right {
+      border-radius: 50px 50px 0 50px;
+      transform-origin: right center;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translate3d(var(--start-x), 110vh, 0) scale(0.6) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      100% {
+        transform: translate3d(var(--end-x), -10vh, 0) scale(1) rotate(var(--rotation));
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="message">
+    <h1>Flores para ti 🌸</h1>
+    <p>Cada flor es un pequeño “te quiero” que flota hacia ti.</p>
+  </div>
+
+  <div class="garden" id="garden"></div>
+
+  <script>
+    const garden = document.getElementById('garden');
+
+    function createFlower() {
+      const flower = document.createElement('div');
+      flower.className = 'flower';
+
+      // Posición inicial y final aleatoria en el eje X
+      const startX = Math.random() * 100;       // 0–100 vw
+      const endX = startX + (Math.random() * 20 - 10); // se desplaza un poco a la izquierda/derecha
+
+      // Duración y retraso aleatorios para que se vean naturales
+      const duration = 12000 + Math.random() * 8000; // 12–20s
+      const delay = Math.random() * 2000;            // 0–2s
+
+      // Ligera rotación
+      const rotation = (Math.random() * 40 - 20) + 'deg';
+
+      flower.style.setProperty('--start-x', startX + 'vw');
+      flower.style.setProperty('--end-x', endX + 'vw');
+      flower.style.setProperty('--rotation', rotation);
+      flower.style.animationDuration = duration + 'ms';
+      flower.style.animationDelay = delay + 'ms';
+
+      // Crear pétalos
+      for (let i = 0; i < 5; i++) {
+        const petal = document.createElement('div');
+        petal.className = 'petal';
+        flower.appendChild(petal);
+      }
+
+      // Centro
+      const center = document.createElement('div');
+      center.className = 'center';
+      flower.appendChild(center);
+
+      // Tallo
+      const stem = document.createElement('div');
+      stem.className = 'stem';
+      flower.appendChild(stem);
+
+      // Hojas
+      const leafLeft = document.createElement('div');
+      leafLeft.className = 'leaf left';
+      leafLeft.style.transform = 'translateX(-120%) rotate(-25deg)';
+      stem.appendChild(leafLeft);
+
+      const leafRight = document.createElement('div');
+      leafRight.className = 'leaf right';
+      leafRight.style.transform = 'translateX(40%) rotate(25deg)';
+      stem.appendChild(leafRight);
+
+      garden.appendChild(flower);
+
+      // Eliminar la flor cuando termine su animación para no llenar la memoria
+      flower.addEventListener('animationend', () => {
+        flower.remove();
+      });
+    }
+
+    // Crear flores continuamente
+    setInterval(() => {
+      // Entre 1 y 3 flores nuevas cada vez
+      const count = 1 + Math.floor(Math.random() * 3);
+      for (let i = 0; i < count; i++) {
+        createFlower();
+      }
+    }, 1200);
+
+    // Crear algunas flores al inicio
+    for (let i = 0; i < 10; i++) {
+      setTimeout(createFlower, i * 500);
+    }
+  </script>
+</body>
+</html>
